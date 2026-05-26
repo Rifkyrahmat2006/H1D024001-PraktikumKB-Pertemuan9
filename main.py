@@ -23,14 +23,14 @@ barang = [
 ]
 
 def run_ga(jumlah_generasi, jumlah_populasi, prob_crossover, prob_mutasi, kapasitas_tas):
+    # Set seed untuk hasil yang konsisten dan reproducible
+    random.seed(8)
+
     # Menentukan jumlah gen berdasarkan jumlah barang
     jumlah_gen = len(barang)
 
     # Inisialisasi populasi awal
     populasi = inisialisasi_populasi(jumlah_populasi, jumlah_gen)
-
-    # Menghitung fitness untuk setiap individu dalam populasi
-    fitness_populasi = [hitung_fitness(individu, barang, kapasitas_tas) for individu in populasi]
 
     # List untuk menyimpan nilai fitness terbaik, terburuk, dan rata-rata setiap generasi
     best_fitness_list = []
@@ -51,16 +51,21 @@ def run_ga(jumlah_generasi, jumlah_populasi, prob_crossover, prob_mutasi, kapasi
         best_fitness = max(fitness_populasi)
         worst_fitness = min(fitness_populasi)
         avg_fitness = sum(fitness_populasi) / len(fitness_populasi)
+
         best_fitness_list.append(best_fitness)
         worst_fitness_list.append(worst_fitness)
         avg_fitness_list.append(avg_fitness)
         all_fitness.append(fitness_populasi.copy())
 
-        # Menyimpan individu terbaik secara keseluruhan
+        # Menyimpan individu terbaik secara keseluruhan (elitism)
         if best_fitness > best_fitness_overall:
             best_fitness_overall = best_fitness
             index_best = fitness_populasi.index(best_fitness)
-            best_individu = populasi[index_best]
+            best_individu = populasi[index_best][:]
+
+        # --- Elitism: pertahankan 2 individu terbaik ke generasi berikutnya ---
+        sorted_pop = sorted(zip(fitness_populasi, populasi), key=lambda x: x[0], reverse=True)
+        elite = [ind[:] for _, ind in sorted_pop[:2]]
 
         new_populasi = []
         used_indices = []
@@ -77,10 +82,11 @@ def run_ga(jumlah_generasi, jumlah_populasi, prob_crossover, prob_mutasi, kapasi
                 used_indices = [idx1]
                 available_indices = [i for i in range(len(populasi)) if i != idx1]
 
-            available_pop = [populasi[i] for i in available_indices]
-            available_fit = [fitness_populasi[i] for i in available_indices]
-            parent2, idx2_local = roulette_wheel_selection(available_pop, available_fit)
-            used_indices.append(available_indices[idx2_local])
+            parent2, _ = roulette_wheel_selection(
+                [populasi[i] for i in available_indices],
+                [fitness_populasi[i] for i in available_indices]
+            )
+            used_indices.append(available_indices[_])
 
             # Crossover untuk menghasilkan anak
             if random.random() < prob_crossover:
@@ -97,8 +103,9 @@ def run_ga(jumlah_generasi, jumlah_populasi, prob_crossover, prob_mutasi, kapasi
             # Menambahkan anak ke populasi baru
             new_populasi.extend([anak1, anak2])
 
-        # Memastikan populasi baru sesuai dengan jumlah populasi
-        populasi = new_populasi[:jumlah_populasi]
+        # Memastikan populasi baru sesuai dengan jumlah populasi,
+        # lalu sisipkan elite di posisi terdepan (menggantikan 2 individu terakhir)
+        populasi = elite + new_populasi[:jumlah_populasi - 2]
 
     # Menampilkan grafik fitness
     plt.figure(figsize=(12, 7))
@@ -113,11 +120,13 @@ def run_ga(jumlah_generasi, jumlah_populasi, prob_crossover, prob_mutasi, kapasi
     plt.plot(range(1, jumlah_generasi+1), best_fitness_list, color='blue', label='Fitness Tertinggi')
     plt.plot(range(1, jumlah_generasi+1), worst_fitness_list, color='yellow', label='Fitness Terendah')
     plt.plot(range(1, jumlah_generasi+1), avg_fitness_list, color='red', label='Fitness Rata-rata')
+
     plt.title('Perkembangan Nilai Fitness')
     plt.xlabel('Generasi')
     plt.ylabel('Nilai Fitness')
     plt.legend()
     plt.grid(True)
+    plt.savefig('fitness_plot.png', dpi=150, bbox_inches='tight')
     plt.show()
 
     # Menampilkan barang yang terpilih dalam knapsack terbaik
@@ -131,11 +140,12 @@ def run_ga(jumlah_generasi, jumlah_populasi, prob_crossover, prob_mutasi, kapasi
     for item in selected_items:
         print(f"- {item}")
 
+
 # Menjalankan GA dengan parameter berikut
 run_ga(
     jumlah_generasi=50,
     jumlah_populasi=20,
-    prob_crossover=0.5,
-    prob_mutasi=0.1,
+    prob_crossover=0.8,
+    prob_mutasi=0.2,
     kapasitas_tas=50
 )

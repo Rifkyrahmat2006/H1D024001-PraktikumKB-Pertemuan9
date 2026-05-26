@@ -14,7 +14,7 @@ def swap_mutation(kromosom):
 def inversion_mutation(kromosom):
     posisi1 = random.randint(0, len(kromosom) - 2)
     posisi2 = random.randint(posisi1 + 1, len(kromosom) - 1)
-    # Perbaikan di sini: konversi hasil reversed ke list
+    # Konversi hasil reversed ke list
     kromosom[posisi1:posisi2] = list(reversed(kromosom[posisi1:posisi2]))
     return kromosom
 
@@ -27,16 +27,17 @@ def uniform_mutation(kromosom, mutation_rate=0.1):
             kromosom[i] = 1 - kromosom[i]  # Membalik nilai gen
     return kromosom
 
-# Definisikan anak1 sebelum digunakan
-anak1 = [0, 1, 1, 0, 1]  # Contoh kromosom, sesuaikan dengan kebutuhan Anda
+if __name__ == "__main__":
+    # Definisikan anak1 sebelum digunakan
+    anak1 = [0, 1, 1, 0, 1]  # Contoh kromosom
 
-# Contoh penggunaan
-mutasi_anak1 = swap_mutation(anak1.copy())       # Swap Mutation
-mutasi_anak2 = inversion_mutation(anak1.copy())  # Inversion Mutation
-mutasi_anak3 = uniform_mutation(anak1.copy())    # Uniform Mutation
+    # Contoh penggunaan
+    mutasi_anak1 = swap_mutation(anak1.copy())       # Swap Mutation
+    mutasi_anak2 = inversion_mutation(anak1.copy())  # Inversion Mutation
+    mutasi_anak3 = uniform_mutation(anak1.copy())    # Uniform Mutation
 
-# Menampilkan hasil setelah mutasi
-print("\nAnak Setelah Mutasi:")
-print(f"Anak 1 (Swap Mutation): {mutasi_anak1}")
-print(f"Anak 2 (Inversion Mutation): {mutasi_anak2}")
-print(f"Anak 3 (Uniform Mutation): {mutasi_anak3}")
+    # Menampilkan hasil setelah mutasi
+    print("\nAnak Setelah Mutasi:")
+    print(f"Anak 1 (Swap Mutation): {mutasi_anak1}")
+    print(f"Anak 2 (Inversion Mutation): {mutasi_anak2}")
+    print(f"Anak 3 (Uniform Mutation): {mutasi_anak3}")

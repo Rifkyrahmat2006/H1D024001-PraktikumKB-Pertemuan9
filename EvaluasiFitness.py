@@ -23,17 +23,17 @@ def hitung_fitness(kromosom, barang, kapasitas_tas):
         return total_harga
 
 # Definisi contoh populasi awal
-populasi_awal = [
-    [1, 0, 1, 0, 1],  # Contoh kromosom individu
-    [0, 1, 0, 1, 0],
-    [1, 1, 0, 0, 1],
-    # Tambahkan lebih banyak individu sesuai kebutuhan
-]
+if __name__ == "__main__":
+    populasi_awal = [
+        [1, 0, 1, 0, 1],  # Contoh kromosom individu
+        [0, 1, 0, 1, 0],
+        [1, 1, 0, 0, 1],
+    ]
 
-# Contoh penggunaan
-fitness_populasi = [hitung_fitness(individu, barang, kapasitas_tas) for individu in populasi_awal]
+    # Contoh penggunaan
+    fitness_populasi = [hitung_fitness(individu, barang, kapasitas_tas) for individu in populasi_awal]
 
-# Menampilkan nilai fitness
-print("\nNilai Fitness:")
-for idx, fitness in enumerate(fitness_populasi):
-    print(f"Individu {idx+1}: Fitness = {fitness}")
+    # Menampilkan nilai fitness
+    print("\nNilai Fitness:")
+    for idx, fitness in enumerate(fitness_populasi):
+        print(f"Individu {idx+1}: Fitness = {fitness}")
